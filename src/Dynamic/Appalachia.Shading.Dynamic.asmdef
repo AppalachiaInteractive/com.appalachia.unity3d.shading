@@ -1,0 +1,19 @@
+{
+    "name": "Appalachia.Shading.Dynamic",
+    "rootNamespace": "",
+    "references": [
+        "GUID:195705ddaa6fe6c42a576177c5d36a5c",
+        "GUID:a15d55b77c0da1b42af8372f5619c965",
+        "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
+        "GUID:7ec7e612bfbe14a459c7dc59c358e760"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
