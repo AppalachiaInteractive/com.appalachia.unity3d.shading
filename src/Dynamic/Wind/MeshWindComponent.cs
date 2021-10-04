@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Appalachia.Core.Behaviours;
+using Appalachia.Base.Behaviours;
 using Appalachia.Core.Extensions;
-using Appalachia.Core.Helpers;
+using Appalachia.Core.Extensions.Helpers;
+using Appalachia.Core.Math;
 using Sirenix.OdinInspector;
 using TreeEditor;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
+using Perlin = Appalachia.Core.Math.Noise.Perlin;
+
 // ReSharper disable UnusedVariable
 
 #endregion
@@ -20,7 +23,7 @@ using UnityEngine;
 
 #endif
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic.Wind
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]

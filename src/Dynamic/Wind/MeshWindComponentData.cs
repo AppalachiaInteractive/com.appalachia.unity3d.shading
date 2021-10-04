@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic.Wind
 {
     public class MeshWindComponentData : EmbeddedScriptableObject<MeshWindComponentData>
     {

@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic.Wind
 {
     [CreateAssetMenu(menuName = "Internal/Metadata/Shading/Mesh Wind Metadata", order = 0)]
     public class MeshWindMetadata : InternalScriptableObject<MeshWindMetadata>

@@ -2,14 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic
 {
     [CreateAssetMenu(menuName = "Internal/Metadata/Shading/Texture Array Config", order = 1)]
     public class InternalTextureArrayConfig : InternalScriptableObject<InternalTextureArrayConfig>

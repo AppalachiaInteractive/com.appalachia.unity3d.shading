@@ -3,14 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Helpers;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Core.Extensions.Helpers;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic
 {
     [CreateAssetMenu(menuName = "Internal/Metadata/Shading/Shader Texture Set", order = 0)]
     public class ShaderTextureSet : InternalScriptableObject<ShaderTextureSet>

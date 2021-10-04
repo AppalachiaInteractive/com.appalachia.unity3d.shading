@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Behaviours;
-using Appalachia.Core.Helpers;
+using Appalachia.Base.Behaviours;
+using Appalachia.Core.Extensions.Helpers;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEditor;
@@ -16,7 +16,7 @@ using UnityEngine;
 
 #endif
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Shading.Dynamic
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
