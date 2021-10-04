@@ -20,22 +20,40 @@ namespace Appalachia.Shading.Dynamic
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class MeshShadingComponent: InternalMonoBehaviour
+    public class MeshShadingComponent : InternalMonoBehaviour
     {
         private const string _PRF_PFX = nameof(MeshShadingComponent) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new ProfilerMarker(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new ProfilerMarker(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new ProfilerMarker(_PRF_PFX + "OnDestroy");
-        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new ProfilerMarker(_PRF_PFX + "OnDrawGizmos");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected = new ProfilerMarker(_PRF_PFX + "OnDrawGizmosSelected");
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
+        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
+        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
 
-        [HideLabel, InlineEditor(Expanded = true), HideReferenceObjectPicker]
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new(_PRF_PFX + "OnDrawGizmosSelected");
+
+        private static readonly ProfilerMarker _PRF_AssignShadingMetadata =
+            new(_PRF_PFX + nameof(AssignShadingMetadata));
+
+        private static readonly ProfilerMarker _PRF_UpdateRenderer =
+            new(_PRF_PFX + nameof(UpdateRenderer));
+
+        [HideLabel]
+        [InlineEditor(Expanded = true)]
+        [HideReferenceObjectPicker]
         public MeshShadingComponentData componentData;
+
+        private void Start()
+        {
+            using (_PRF_Start.Auto())
+            {
+                AssignShadingMetadata();
+            }
+        }
 
         private void OnEnable()
         {
@@ -57,26 +75,37 @@ namespace Appalachia.Shading.Dynamic
 
                             if (string.IsNullOrWhiteSpace(prefabAssetPath))
                             {
-                                prefabAssetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(this);
+                                prefabAssetPath =
+                                    PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(this);
                             }
 
                             if (string.IsNullOrWhiteSpace(prefabAssetPath))
                             {
-                                DebugHelper.LogError($"Could not find asset path for prefab {name}.");
+                                DebugHelper.LogError(
+                                    $"Could not find asset path for prefab {name}."
+                                );
 
                                 return;
                             }
 
-                            componentData = AssetDatabase.LoadAssetAtPath<MeshShadingComponentData>(prefabAssetPath);
+                            componentData =
+                                AssetDatabase.LoadAssetAtPath<MeshShadingComponentData>(
+                                    prefabAssetPath
+                                );
 
                             if (componentData == null)
                             {
-                                componentData = MeshShadingComponentData.CreateAndSaveInExisting<MeshShadingComponentData>(
-                                    prefabAssetPath,
-                                    "Mesh Shading Component Data"
-                                );
+                                componentData =
+                                    MeshShadingComponentData
+                                       .CreateAndSaveInExisting<MeshShadingComponentData>(
+                                            prefabAssetPath,
+                                            "Mesh Shading Component Data"
+                                        );
 
-                                PrefabUtility.ApplyPrefabInstance(gameObject, InteractionMode.AutomatedAction);
+                                PrefabUtility.ApplyPrefabInstance(
+                                    gameObject,
+                                    InteractionMode.AutomatedAction
+                                );
                             }
                         }
                     }
@@ -92,17 +121,6 @@ namespace Appalachia.Shading.Dynamic
             }
         }
 
-        private void Start()
-        {
-            using (_PRF_Start.Auto())
-            {
-                AssignShadingMetadata();
-            }
-        }
-
-
-        private static readonly ProfilerMarker _PRF_AssignShadingMetadata = new ProfilerMarker(_PRF_PFX + nameof(AssignShadingMetadata));
-        
         [Button]
         public void AssignShadingMetadata()
         {
@@ -119,7 +137,11 @@ namespace Appalachia.Shading.Dynamic
                             var filters = lod.GetComponentsInChildren<MeshFilter>();
 
                             var biggestMeshSize = filters.Max(f => f.sharedMesh.vertexCount);
-                            var biggestMesh = filters.First(f => f.sharedMesh.vertexCount == biggestMeshSize).sharedMesh;
+                            var biggestMesh = filters
+                                             .First(
+                                                  f => f.sharedMesh.vertexCount == biggestMeshSize
+                                              )
+                                             .sharedMesh;
                             biggestMesh.RecalculateBounds();
 
                             for (var index = 0; index < filters.Length; index++)
@@ -129,7 +151,9 @@ namespace Appalachia.Shading.Dynamic
 
                                 if ((r == null) || (filter == null))
                                 {
-                                    DebugHelper.LogError($"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to.");
+                                    DebugHelper.LogError(
+                                        $"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to."
+                                    );
                                     return;
                                 }
 
@@ -152,7 +176,9 @@ namespace Appalachia.Shading.Dynamic
 
                                 if ((r == null) || (filter == null))
                                 {
-                                    DebugHelper.LogError($"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to.");
+                                    DebugHelper.LogError(
+                                        $"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to."
+                                    );
                                     return;
                                 }
 
@@ -171,7 +197,9 @@ namespace Appalachia.Shading.Dynamic
 
                         if ((r == null) || (filter == null))
                         {
-                            DebugHelper.LogError($"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to.");
+                            DebugHelper.LogError(
+                                $"{gameObject.name}: Could not find mesh data to assign mesh UV shading data to."
+                            );
                             return;
                         }
 
@@ -183,7 +211,9 @@ namespace Appalachia.Shading.Dynamic
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException($"{gameObject.name}: Failed to assign mesh shading data to {name}");
+                    ex.LogException(
+                        $"{gameObject.name}: Failed to assign mesh shading data to {name}"
+                    );
                 }
             }
         }
@@ -200,12 +230,11 @@ namespace Appalachia.Shading.Dynamic
             }
         }
 
-        private static readonly ProfilerMarker _PRF_UpdateRenderer = new ProfilerMarker(_PRF_PFX + nameof(UpdateRenderer));
         private void UpdateRenderer(Renderer r, Mesh sizingMesh, Mesh mesh, MeshShadingMetadata m)
         {
             using (_PRF_UpdateRenderer.Auto())
             {
-                var minMaterialCount = System.Math.Min(r.sharedMaterials.Length, m.submeshMetadata.Count);
+                var minMaterialCount = Math.Min(r.sharedMaterials.Length, m.submeshMetadata.Count);
                 var values = m.Calculate(sizingMesh, componentData.boundsCenterOffsetPercentage);
 
                 for (var submeshIndex = 0; submeshIndex < minMaterialCount; submeshIndex++)
@@ -214,7 +243,9 @@ namespace Appalachia.Shading.Dynamic
                     var submeshValues = values[submeshIndex];
                     var submeshIndices = mesh.GetIndices(submeshIndex).Distinct().ToArray();
 
-                    for (var channelIndex = 0; channelIndex < submeshMetadata.channels.Count; channelIndex++)
+                    for (var channelIndex = 0;
+                        channelIndex < submeshMetadata.channels.Count;
+                        channelIndex++)
                     {
                         var channelMetadata = submeshMetadata.channels[channelIndex];
                         var channel = (int) channelMetadata.channel;

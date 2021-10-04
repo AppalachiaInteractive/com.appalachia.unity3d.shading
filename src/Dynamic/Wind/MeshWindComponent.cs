@@ -27,37 +27,47 @@ namespace Appalachia.Shading.Dynamic.Wind
 {
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class MeshWindComponent: InternalMonoBehaviour
+    public class MeshWindComponent : InternalMonoBehaviour
     {
         private const string _PRF_PFX = nameof(MeshWindComponent) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new ProfilerMarker(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new ProfilerMarker(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new ProfilerMarker(_PRF_PFX + "OnDestroy");
-        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new ProfilerMarker(_PRF_PFX + "OnDrawGizmos");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected = new ProfilerMarker(_PRF_PFX + "OnDrawGizmosSelected");
-        
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
+        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
+        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
+
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new(_PRF_PFX + "OnDrawGizmosSelected");
+
 #if UNITY_EDITOR
-        [HideLabel, InlineEditor(Expanded = true), HideReferenceObjectPicker]
+        [HideLabel]
+        [InlineEditor(Expanded = true)]
+        [HideReferenceObjectPicker]
         public MeshWindComponentData componentData;
 
         [InlineEditor(Expanded = true)]
         public MeshWindMetadata metadata;
 
         private bool showGenerateMaskButton =>
-            (componentData != null) && (componentData.style == MeshWindComponentData.MeshWindStyle.Texture2D) && (componentData.windMask == null);
+            (componentData != null) &&
+            (componentData.style == MeshWindComponentData.MeshWindStyle.Texture2D) &&
+            (componentData.windMask == null);
 
         [ShowIf(nameof(showGenerateMaskButton))]
-        public MeshWindComponentData.TextureSize generatedMaskSize = MeshWindComponentData.TextureSize.k128;
+        public MeshWindComponentData.TextureSize generatedMaskSize =
+            MeshWindComponentData.TextureSize.k128;
 
-        [Button, ShowIf(nameof(showGenerateMaskButton))]
+        [Button]
+        [ShowIf(nameof(showGenerateMaskButton))]
         public void GenerateDefaultWindMask()
         {
-            var meshFilter = GetComponentsInChildren<MeshFilter>().OrderByDescending(mf => mf.sharedMesh.vertexCount).FirstOrDefault();
+            var meshFilter = GetComponentsInChildren<MeshFilter>()
+                            .OrderByDescending(mf => mf.sharedMesh.vertexCount)
+                            .FirstOrDefault();
 
             var r = meshFilter.GetComponent<Renderer>();
 
@@ -81,9 +91,15 @@ namespace Appalachia.Shading.Dynamic.Wind
             var textureSettings = new TextureImporterSettings();
             importer.ReadTextureSettings(textureSettings);
 
-            var newPath = $"{Path.GetDirectoryName(texturePath)}\\{Path.GetFileNameWithoutExtension(texturePath)}_wind.png";
+            var newPath =
+                $"{Path.GetDirectoryName(texturePath)}\\{Path.GetFileNameWithoutExtension(texturePath)}_wind.png";
 
-            var tex = new Texture2D((int) generatedMaskSize, (int) generatedMaskSize, TextureFormat.ARGB32, true);
+            var tex = new Texture2D(
+                (int) generatedMaskSize,
+                (int) generatedMaskSize,
+                TextureFormat.ARGB32,
+                true
+            );
 
             File.WriteAllBytes(newPath, tex.EncodeToPNG());
 
@@ -100,9 +116,11 @@ namespace Appalachia.Shading.Dynamic.Wind
         private bool showPopulateTreeMaterialsButton =>
             (componentData != null) &&
             (componentData.style == MeshWindComponentData.MeshWindStyle.TreeMaterials) &&
-            ((componentData.treeMaterials.Count == 0) || componentData.treeMaterials.Any(tm => tm.windMask == null));
+            ((componentData.treeMaterials.Count == 0) ||
+             componentData.treeMaterials.Any(tm => tm.windMask == null));
 
-        [Button, ShowIf(nameof(showPopulateTreeMaterialsButton))]
+        [Button]
+        [ShowIf(nameof(showPopulateTreeMaterialsButton))]
         public void PopulateTreeMaterials()
         {
             var renderers = GetComponentsInChildren<MeshRenderer>();
@@ -111,7 +129,9 @@ namespace Appalachia.Shading.Dynamic.Wind
 
             foreach (var material in materials)
             {
-                if (componentData.treeMaterials.Any(tm => (tm.material == material) && (tm.windMask != null)))
+                if (componentData.treeMaterials.Any(
+                    tm => (tm.material == material) && (tm.windMask != null)
+                ))
                 {
                     continue;
                 }
@@ -134,9 +154,15 @@ namespace Appalachia.Shading.Dynamic.Wind
                 var textureSettings = new TextureImporterSettings();
                 importer.ReadTextureSettings(textureSettings);
 
-                var newPath = $"{Path.GetDirectoryName(texturePath)}\\{Path.GetFileNameWithoutExtension(texturePath)}_wind.png";
+                var newPath =
+                    $"{Path.GetDirectoryName(texturePath)}\\{Path.GetFileNameWithoutExtension(texturePath)}_wind.png";
 
-                var tex = new Texture2D((int) generatedMaskSize, (int) generatedMaskSize, TextureFormat.ARGB32, true);
+                var tex = new Texture2D(
+                    (int) generatedMaskSize,
+                    (int) generatedMaskSize,
+                    TextureFormat.ARGB32,
+                    true
+                );
 
                 File.WriteAllBytes(newPath, tex.EncodeToPNG());
 
@@ -151,13 +177,13 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                 tex = AssetDatabase.LoadAssetAtPath<Texture2D>(newPath);
 
-                var treeMaterial = new MeshWindComponentData.TreeMaterialSet {material = material, windMask = tex};
+                var treeMaterial =
+                    new MeshWindComponentData.TreeMaterialSet {material = material, windMask = tex};
 
                 componentData.treeMaterials.Add(treeMaterial);
             }
         }
 
-        
         private void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
@@ -178,26 +204,37 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                             if (string.IsNullOrWhiteSpace(prefabAssetPath))
                             {
-                                prefabAssetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(this);
+                                prefabAssetPath =
+                                    PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(this);
                             }
 
                             if (string.IsNullOrWhiteSpace(prefabAssetPath))
                             {
-                                DebugHelper.LogError($"Could not find asset path for prefab {name}.");
+                                DebugHelper.LogError(
+                                    $"Could not find asset path for prefab {name}."
+                                );
 
                                 return;
                             }
 
-                            componentData = AssetDatabase.LoadAssetAtPath<MeshWindComponentData>(prefabAssetPath);
+                            componentData =
+                                AssetDatabase.LoadAssetAtPath<MeshWindComponentData>(
+                                    prefabAssetPath
+                                );
 
                             if (componentData == null)
                             {
-                                componentData = MeshWindComponentData.CreateAndSaveInExisting<MeshWindComponentData>(
-                                    prefabAssetPath,
-                                    "Mesh Wind Component Data"
-                                );
+                                componentData =
+                                    MeshWindComponentData
+                                       .CreateAndSaveInExisting<MeshWindComponentData>(
+                                            prefabAssetPath,
+                                            "Mesh Wind Component Data"
+                                        );
 
-                                PrefabUtility.ApplyPrefabInstance(gameObject, InteractionMode.AutomatedAction);
+                                PrefabUtility.ApplyPrefabInstance(
+                                    gameObject,
+                                    InteractionMode.AutomatedAction
+                                );
                             }
                         }
                     }
@@ -218,10 +255,10 @@ namespace Appalachia.Shading.Dynamic.Wind
             AssignWindMetadata(false);
         }
 
-        private static Dictionary<Material, MeshWindMetadata.MeshWindMaterialMatchGroup> _materialLookup =
-            new Dictionary<Material, MeshWindMetadata.MeshWindMaterialMatchGroup>();
+        private static readonly Dictionary<Material, MeshWindMetadata.MeshWindMaterialMatchGroup>
+            _materialLookup = new();
 
-        private static object _materialLookupLock = new object();
+        private static readonly object _materialLookupLock = new();
 
         [Button]
         public void AssignWindMetadata()
@@ -229,7 +266,9 @@ namespace Appalachia.Shading.Dynamic.Wind
             AssignWindMetadata(true);
         }
 
-        private static readonly ProfilerMarker _PRF_AssignWindMetadata = new ProfilerMarker(_PRF_PFX + nameof(AssignWindMetadata));
+        private static readonly ProfilerMarker _PRF_AssignWindMetadata =
+            new(_PRF_PFX + nameof(AssignWindMetadata));
+
         public void AssignWindMetadata(bool force)
         {
             using (_PRF_AssignWindMetadata.Auto())
@@ -241,11 +280,13 @@ namespace Appalachia.Shading.Dynamic.Wind
                         return;
                     }
 
-                    if (_materialLookup.Count != metadata.materialMatches.Sum(m => m.materials.Count))
+                    if (_materialLookup.Count !=
+                        metadata.materialMatches.Sum(m => m.materials.Count))
                     {
                         lock (_materialLookupLock)
                         {
-                            if (_materialLookup.Count != metadata.materialMatches.Sum(m => m.materials.Count))
+                            if (_materialLookup.Count !=
+                                metadata.materialMatches.Sum(m => m.materials.Count))
                             {
                                 _materialLookup.Clear();
                                 foreach (var mat in metadata.materialMatches)
@@ -275,9 +316,13 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                         Mesh updatedMesh;
 
-                        var matchingRecoveryInfo = componentData.recoveryInfo.FirstOrDefault(ri => ri.updated == currentMesh);
+                        var matchingRecoveryInfo =
+                            componentData.recoveryInfo.FirstOrDefault(
+                                ri => ri.updated == currentMesh
+                            );
 
-                        if ((matchingRecoveryInfo != null) && (matchingRecoveryInfo.updated != null))
+                        if ((matchingRecoveryInfo != null) &&
+                            (matchingRecoveryInfo.updated != null))
                         {
                             if (currentMesh != matchingRecoveryInfo.updated)
                             {
@@ -297,7 +342,8 @@ namespace Appalachia.Shading.Dynamic.Wind
                             }
                         }
 
-                        if ((matchingRecoveryInfo == null) || (matchingRecoveryInfo.updated == null))
+                        if ((matchingRecoveryInfo == null) ||
+                            (matchingRecoveryInfo.updated == null))
                         {
                             var newMeshName = $"{currentMesh.name}_ADSP";
                             var path = AssetDatabase.GetAssetPath(currentMesh);
@@ -316,7 +362,9 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                             matchingRecoveryInfo = new MeshWindComponentData.WindMeshSet
                             {
-                                original = currentMesh, originalMaterials = renderer_.sharedMaterials.ToList(), updated = updatedMesh
+                                original = currentMesh,
+                                originalMaterials = renderer_.sharedMaterials.ToList(),
+                                updated = updatedMesh
                             };
 
                             componentData.recoveryInfo.Add(matchingRecoveryInfo);
@@ -382,7 +430,11 @@ namespace Appalachia.Shading.Dynamic.Wind
                 }
                 catch (Exception ex)
                 {
-                    DebugHelper.LogException($"{gameObject.name}: Failed to assign mesh wind data to {name}: {ex.Message}.", ex, this);
+                    DebugHelper.LogException(
+                        $"{gameObject.name}: Failed to assign mesh wind data to {name}: {ex.Message}.",
+                        ex,
+                        this
+                    );
                 }
             }
         }
@@ -391,13 +443,16 @@ namespace Appalachia.Shading.Dynamic.Wind
         private static bool _showAllButtons;
         private static bool _showBatchRevertButtons = _showRevertButtons && _showAllButtons;
 
-        [Button, FoldoutGroup("Revert", Order = 1000, Expanded = false)]
+        [Button]
+        [FoldoutGroup("Revert", Order = 1000, Expanded = false)]
         public void ShowRevertButtons()
         {
             _showRevertButtons = !_showRevertButtons;
         }
 
-        [Button, ShowIf(nameof(_showRevertButtons)), FoldoutGroup("Revert", Order = 1000, Expanded = false)]
+        [Button]
+        [ShowIf(nameof(_showRevertButtons))]
+        [FoldoutGroup("Revert", Order = 1000, Expanded = false)]
         public void Revert()
         {
             try
@@ -408,7 +463,8 @@ namespace Appalachia.Shading.Dynamic.Wind
                 {
                     var currentMesh = renderer_.GetSharedMesh();
 
-                    var matchingRecoveryInfo = componentData.recoveryInfo.FirstOrDefault(ri => ri.updated == currentMesh);
+                    var matchingRecoveryInfo =
+                        componentData.recoveryInfo.FirstOrDefault(ri => ri.updated == currentMesh);
 
                     if ((matchingRecoveryInfo != null) && (matchingRecoveryInfo.original != null))
                     {
@@ -426,18 +482,27 @@ namespace Appalachia.Shading.Dynamic.Wind
             }
             catch (Exception ex)
             {
-                DebugHelper.LogException($"{gameObject.name}: Failed to revert mesh wind data to {name}: {ex.Message}.", ex, this);
+                DebugHelper.LogException(
+                    $"{gameObject.name}: Failed to revert mesh wind data to {name}: {ex.Message}.",
+                    ex,
+                    this
+                );
             }
         }
 
-        [Button, FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
+        [Button]
+        [FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
         public void ShowAllButtons()
         {
             _showAllButtons = !_showAllButtons;
         }
 
-        private static readonly ProfilerMarker _PRF_AssignAllWindMetadata = new ProfilerMarker(_PRF_PFX + nameof(AssignAllWindMetadata));
-        [Button, ShowIf(nameof(_showAllButtons)), FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
+        private static readonly ProfilerMarker _PRF_AssignAllWindMetadata =
+            new(_PRF_PFX + nameof(AssignAllWindMetadata));
+
+        [Button]
+        [ShowIf(nameof(_showAllButtons))]
+        [FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
         public void AssignAllWindMetadata()
         {
             using (_PRF_AssignAllWindMetadata.Auto())
@@ -451,8 +516,12 @@ namespace Appalachia.Shading.Dynamic.Wind
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RevertMismatchedRecoveryData = new ProfilerMarker(_PRF_PFX + nameof(RevertMismatchedRecoveryData));
-        [Button, ShowIf(nameof(_showBatchRevertButtons)), FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
+        private static readonly ProfilerMarker _PRF_RevertMismatchedRecoveryData =
+            new(_PRF_PFX + nameof(RevertMismatchedRecoveryData));
+
+        [Button]
+        [ShowIf(nameof(_showBatchRevertButtons))]
+        [FoldoutGroup("Batch Operations", Order = 2000, Expanded = false)]
         public void RevertMismatchedRecoveryData()
         {
             using (_PRF_RevertMismatchedRecoveryData.Auto())
@@ -471,7 +540,11 @@ namespace Appalachia.Shading.Dynamic.Wind
             }
         }
 
-        private List<Color> AssignWindMetadata_FadeUp(Mesh mesh, Vector3 offset, Quaternion meshRotation, Vector3 scale)
+        private List<Color> AssignWindMetadata_FadeUp(
+            Mesh mesh,
+            Vector3 offset,
+            Quaternion meshRotation,
+            Vector3 scale)
         {
             var bounds = new MeshBounds(mesh, offset, meshRotation, scale);
 
@@ -488,7 +561,11 @@ namespace Appalachia.Shading.Dynamic.Wind
             for (var i = 0; i < vertices.Count; i++)
             {
                 var vertex = vertices[i];
-                var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                var updatedVertex = new Vector3(
+                    vertex.x * scale.x,
+                    vertex.y * scale.y,
+                    vertex.z * scale.z
+                );
                 updatedVertex = meshRotation * updatedVertex;
                 updatedVertex += offset;
 
@@ -499,8 +576,16 @@ namespace Appalachia.Shading.Dynamic.Wind
                 var color = new Color(
                     LerpHelper.LerpExact(metadata.grassFadeR.x, metadata.grassFadeR.y, timeY),
                     0f,
-                    LerpHelper.LerpExact(metadata.grassFadeB.x, metadata.grassFadeB.y, timeX * timeZ),
-                    LerpHelper.LerpExact(metadata.grassFadeA.x, metadata.grassFadeA.y, 1 - (timeX * timeZ))
+                    LerpHelper.LerpExact(
+                        metadata.grassFadeB.x,
+                        metadata.grassFadeB.y,
+                        timeX * timeZ
+                    ),
+                    LerpHelper.LerpExact(
+                        metadata.grassFadeA.x,
+                        metadata.grassFadeA.y,
+                        1 - (timeX * timeZ)
+                    )
                 );
 
                 color.r = Mathf.Clamp01(color.r * componentData.windStrengthModifier);
@@ -524,7 +609,8 @@ namespace Appalachia.Shading.Dynamic.Wind
             var bounds = new MeshBounds(mesh, offset, meshRotation, scale);
 
             var variationNoise = Perlin.Noise(mesh.bounds.size * metadata.variationNoiseScale);
-            var variationNoiseAmount = metadata.variationNoiseRange.x + (variationNoise * metadata.variationNoiseRange.y);
+            var variationNoiseAmount = metadata.variationNoiseRange.x +
+                                       (variationNoise * metadata.variationNoiseRange.y);
 
             bounds.x.min = 0;
             bounds.z.min = 0;
@@ -546,12 +632,18 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                 mesh.GetIndices(indices, i);
 
-                var color = matLookup.ContainsKey(material) ? matLookup[material].vertexColor : metadata.baseColor;
+                var color = matLookup.ContainsKey(material)
+                    ? matLookup[material].vertexColor
+                    : metadata.baseColor;
 
                 for (var j = 0; j < indices.Count; j++)
                 {
                     var vertex = vertices[indices[j]];
-                    var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                    var updatedVertex = new Vector3(
+                        vertex.x * scale.x,
+                        vertex.y * scale.y,
+                        vertex.z * scale.z
+                    );
                     updatedVertex = meshRotation * updatedVertex;
                     updatedVertex += offset;
 
@@ -560,30 +652,53 @@ namespace Appalachia.Shading.Dynamic.Wind
                     var timeZ = Mathf.Clamp01(bounds.NormalizeZ(Mathf.Abs(updatedVertex.z)));
 
                     //var timeXYZ = Mathf.Max(timeX, Mathf.Max(timeY, timeZ));
-                    var timeXZ = Mathf.Max(timeX,  timeZ);
+                    var timeXZ = Mathf.Max(timeX, timeZ);
 
-                    var generalNoise = Perlin.Noise(metadata.generalMotionNoiseScale * updatedVertex.xz());
+                    var generalNoise = Perlin.Noise(
+                        metadata.generalMotionNoiseScale * updatedVertex.xz()
+                    );
                     var leafNoise = 1 - Perlin.Noise(metadata.leafMotionNoiseScale * updatedVertex);
 
-                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x + (generalNoise * metadata.generalMotionNoiseRange.y);
+                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x +
+                                             (generalNoise * metadata.generalMotionNoiseRange.y);
 
-                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x + (leafNoise * metadata.leafMotionNoiseRange.y);
+                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x +
+                                          (leafNoise * metadata.leafMotionNoiseRange.y);
 
-                    var generalTime = timeY + ((metadata.generalMotionXZInfluence * timeXZ) / (1 + metadata.generalMotionXZInfluence));
+                    var generalTime = timeY +
+                                      ((metadata.generalMotionXZInfluence * timeXZ) /
+                                       (1 + metadata.generalMotionXZInfluence));
 
                     var colorAugment = new Color(
                         componentData.disableGeneralMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeR.x, metadata.grassFadeR.y, generalNoiseAmount * generalTime),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeR.x,
+                                metadata.grassFadeR.y,
+                                generalNoiseAmount * generalTime
+                            ),
                         0f,
                         componentData.disableLeafMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeB.x, metadata.grassFadeB.y, leafNoiseAmount * timeXZ),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeB.x,
+                                metadata.grassFadeB.y,
+                                leafNoiseAmount * timeXZ
+                            ),
                         componentData.disableVariationMotion
                             ? 0f
                             : componentData.invertVariationMotion
-                                ? 1 - LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
-                                : LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
+                                ? 1 -
+                                  LerpHelper.SmoothStep(
+                                      metadata.grassFadeA.x,
+                                      metadata.grassFadeA.y,
+                                      variationNoiseAmount
+                                  )
+                                : LerpHelper.SmoothStep(
+                                    metadata.grassFadeA.x,
+                                    metadata.grassFadeA.y,
+                                    variationNoiseAmount
+                                )
                     );
 
                     var finalColor = color * colorAugment;
@@ -599,7 +714,12 @@ namespace Appalachia.Shading.Dynamic.Wind
             return colors;
         }
 
-        private List<Color> AssignWindMetadata_Texture2D(Mesh mesh, Vector3 offset, Quaternion meshRotation, Vector3 scale, Texture2D windMask)
+        private List<Color> AssignWindMetadata_Texture2D(
+            Mesh mesh,
+            Vector3 offset,
+            Quaternion meshRotation,
+            Vector3 scale,
+            Texture2D windMask)
         {
             if (windMask == null)
             {
@@ -616,7 +736,8 @@ namespace Appalachia.Shading.Dynamic.Wind
             var bounds = new MeshBounds(mesh, offset, meshRotation, scale);
 
             var variationNoise = Perlin.Noise(mesh.bounds.size * metadata.variationNoiseScale);
-            var variationNoiseAmount = metadata.variationNoiseRange.x + (variationNoise * metadata.variationNoiseRange.y);
+            var variationNoiseAmount = metadata.variationNoiseRange.x +
+                                       (variationNoise * metadata.variationNoiseRange.y);
 
             bounds.x.min = 0;
             bounds.z.min = 0;
@@ -642,7 +763,11 @@ namespace Appalachia.Shading.Dynamic.Wind
                 for (var j = 0; j < indices.Count; j++)
                 {
                     var vertex = vertices[indices[j]];
-                    var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                    var updatedVertex = new Vector3(
+                        vertex.x * scale.x,
+                        vertex.y * scale.y,
+                        vertex.z * scale.z
+                    );
                     updatedVertex = meshRotation * updatedVertex;
                     updatedVertex += offset;
                     var uv = uv1[indices[j]];
@@ -654,36 +779,60 @@ namespace Appalachia.Shading.Dynamic.Wind
                     var timeZ = Mathf.Clamp01(bounds.NormalizeZ(Mathf.Abs(updatedVertex.z)));
 
                     //var timeXYZ = Mathf.Max(timeX, Mathf.Max(timeY, timeZ));
-                    var timeXZ = Mathf.Max(timeX,  timeZ);
+                    var timeXZ = Mathf.Max(timeX, timeZ);
 
-                    var generalNoise = Perlin.Noise(metadata.generalMotionNoiseScale * updatedVertex.xz());
+                    var generalNoise = Perlin.Noise(
+                        metadata.generalMotionNoiseScale * updatedVertex.xz()
+                    );
                     var leafNoise = 1 - Perlin.Noise(metadata.leafMotionNoiseScale * updatedVertex);
 
-                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x + (generalNoise * metadata.generalMotionNoiseRange.y);
+                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x +
+                                             (generalNoise * metadata.generalMotionNoiseRange.y);
 
-                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x + (leafNoise * metadata.leafMotionNoiseRange.y);
+                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x +
+                                          (leafNoise * metadata.leafMotionNoiseRange.y);
 
-                    var generalTime = timeY + ((componentData.windMaskXZInfluence * timeXZ) / (1 + componentData.windMaskXZInfluence));
+                    var generalTime = timeY +
+                                      ((componentData.windMaskXZInfluence * timeXZ) /
+                                       (1 + componentData.windMaskXZInfluence));
 
                     var colorAugment = new Color(
                         componentData.disableGeneralMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeR.x, metadata.grassFadeR.y, generalNoiseAmount * generalTime),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeR.x,
+                                metadata.grassFadeR.y,
+                                generalNoiseAmount * generalTime
+                            ),
                         0f,
                         componentData.disableLeafMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeB.x, metadata.grassFadeB.y, leafNoiseAmount * timeXZ),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeB.x,
+                                metadata.grassFadeB.y,
+                                leafNoiseAmount * timeXZ
+                            ),
                         componentData.disableVariationMotion
                             ? 0f
                             : componentData.invertVariationMotion
-                                ? 1 - LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
-                                : LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
+                                ? 1 -
+                                  LerpHelper.SmoothStep(
+                                      metadata.grassFadeA.x,
+                                      metadata.grassFadeA.y,
+                                      variationNoiseAmount
+                                  )
+                                : LerpHelper.SmoothStep(
+                                    metadata.grassFadeA.x,
+                                    metadata.grassFadeA.y,
+                                    variationNoiseAmount
+                                )
                     );
 
                     var finalColor = maskColor * colorAugment;
 
                     finalColor.r = Mathf.Clamp01(finalColor.r * componentData.windStrengthModifier);
-                    finalColor.g = Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
+                    finalColor.g =
+                        Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
                     finalColor.b = Mathf.Clamp01(finalColor.b * componentData.leafStrengthModifier);
 
                     colors[indices[j]] = finalColor;
@@ -709,11 +858,25 @@ namespace Appalachia.Shading.Dynamic.Wind
 
                 if (treeData != null)
                 {
-                    return AssignWindMetadata_TreeMaterials_TreeCreator(mesh, offset, meshRotation, scale, tree, materials);
+                    return AssignWindMetadata_TreeMaterials_TreeCreator(
+                        mesh,
+                        offset,
+                        meshRotation,
+                        scale,
+                        tree,
+                        materials
+                    );
                 }
             }
 
-            return AssignWindMetadata_TreeMaterials_NonTreeCreator(mesh, offset, meshRotation, scale, go, materials);
+            return AssignWindMetadata_TreeMaterials_NonTreeCreator(
+                mesh,
+                offset,
+                meshRotation,
+                scale,
+                go,
+                materials
+            );
         }
 
         private List<Color> AssignWindMetadata_TreeMaterials_TreeCreator(
@@ -722,6 +885,7 @@ namespace Appalachia.Shading.Dynamic.Wind
             Quaternion meshRotation,
             Vector3 scale,
             Tree tree,
+
             // ReSharper disable once UnusedParameter.Local
             List<MeshWindComponentData.TreeMaterialSet> materials)
         {
@@ -740,7 +904,8 @@ namespace Appalachia.Shading.Dynamic.Wind
             }
 
             var variationNoise = Perlin.Noise(mesh.bounds.size * metadata.variationNoiseScale);
-            var variationNoiseAmount = metadata.variationNoiseRange.x + (variationNoise * metadata.variationNoiseRange.y);
+            var variationNoiseAmount = metadata.variationNoiseRange.x +
+                                       (variationNoise * metadata.variationNoiseRange.y);
 
             var vertices = new List<Vector3>();
             mesh.GetVertices(vertices);
@@ -756,7 +921,11 @@ namespace Appalachia.Shading.Dynamic.Wind
                 for (var j = 0; j < indices.Count; j++)
                 {
                     var vertex = vertices[indices[j]];
-                    var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                    var updatedVertex = new Vector3(
+                        vertex.x * scale.x,
+                        vertex.y * scale.y,
+                        vertex.z * scale.z
+                    );
                     updatedVertex = meshRotation * updatedVertex;
                     updatedVertex += offset;
                     var uv = uv1[indices[j]];
@@ -770,34 +939,58 @@ namespace Appalachia.Shading.Dynamic.Wind
                     var timeXYZ = Mathf.Max(timeX, Mathf.Max(timeY, timeZ));
                     var timeXZ = Mathf.Max(timeX,  timeZ);
 
-                    var generalNoise = Perlin.Noise(metadata.generalMotionNoiseScale * updatedVertex.xz());
+                    var generalNoise = Perlin.Noise(
+                        metadata.generalMotionNoiseScale * updatedVertex.xz()
+                    );
                     var leafNoise = 1 - Perlin.Noise(metadata.leafMotionNoiseScale * updatedVertex);
 
-                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x + (generalNoise * metadata.generalMotionNoiseRange.y);
+                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x +
+                                             (generalNoise * metadata.generalMotionNoiseRange.y);
 
-                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x + (leafNoise * metadata.leafMotionNoiseRange.y);
+                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x +
+                                          (leafNoise * metadata.leafMotionNoiseRange.y);
 
-                    var generalTime = timeY + ((componentData.windMaskXZInfluence * timeXZ) / (1 + componentData.windMaskXZInfluence));
+                    var generalTime = timeY +
+                                      ((componentData.windMaskXZInfluence * timeXZ) /
+                                       (1 + componentData.windMaskXZInfluence));
 
                     var colorAugment = new Color(
                         componentData.disableGeneralMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeR.x, metadata.grassFadeR.y, generalNoiseAmount * generalTime),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeR.x,
+                                metadata.grassFadeR.y,
+                                generalNoiseAmount * generalTime
+                            ),
                         0f,
                         componentData.disableLeafMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeB.x, metadata.grassFadeB.y, leafNoiseAmount * timeXZ),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeB.x,
+                                metadata.grassFadeB.y,
+                                leafNoiseAmount * timeXZ
+                            ),
                         componentData.disableVariationMotion
                             ? 0f
                             : componentData.invertVariationMotion
-                                ? 1 - LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
-                                : LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
+                                ? 1 -
+                                  LerpHelper.SmoothStep(
+                                      metadata.grassFadeA.x,
+                                      metadata.grassFadeA.y,
+                                      variationNoiseAmount
+                                  )
+                                : LerpHelper.SmoothStep(
+                                    metadata.grassFadeA.x,
+                                    metadata.grassFadeA.y,
+                                    variationNoiseAmount
+                                )
                     );
 
                     var finalColor = maskColor * colorAugment;
 
                     finalColor.r = Mathf.Clamp01(finalColor.r * componentData.windStrengthModifier);
-                    finalColor.g = Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
+                    finalColor.g =
+                        Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
                     finalColor.b = Mathf.Clamp01(finalColor.b * componentData.leafStrengthModifier);
 
                     colors[indices[j]] = finalColor;
@@ -818,7 +1011,8 @@ namespace Appalachia.Shading.Dynamic.Wind
             var bounds = new MeshBounds(mesh, offset, meshRotation, scale);
 
             var variationNoise = Perlin.Noise(mesh.bounds.size * metadata.variationNoiseScale);
-            var variationNoiseAmount = metadata.variationNoiseRange.x + (variationNoise * metadata.variationNoiseRange.y);
+            var variationNoiseAmount = metadata.variationNoiseRange.x +
+                                       (variationNoise * metadata.variationNoiseRange.y);
 
             bounds.x.min = 0;
             bounds.z.min = 0;
@@ -844,7 +1038,11 @@ namespace Appalachia.Shading.Dynamic.Wind
                 for (var j = 0; j < indices.Count; j++)
                 {
                     var vertex = vertices[indices[j]];
-                    var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                    var updatedVertex = new Vector3(
+                        vertex.x * scale.x,
+                        vertex.y * scale.y,
+                        vertex.z * scale.z
+                    );
                     updatedVertex = meshRotation * updatedVertex;
                     updatedVertex += offset;
                     var uv = uv1[indices[j]];
@@ -858,34 +1056,58 @@ namespace Appalachia.Shading.Dynamic.Wind
                     var timeXYZ = Mathf.Max(timeX, Mathf.Max(timeY, timeZ));
                     var timeXZ = Mathf.Max(timeX,  timeZ);
 
-                    var generalNoise = Perlin.Noise(metadata.generalMotionNoiseScale * updatedVertex.xz());
+                    var generalNoise = Perlin.Noise(
+                        metadata.generalMotionNoiseScale * updatedVertex.xz()
+                    );
                     var leafNoise = 1 - Perlin.Noise(metadata.leafMotionNoiseScale * updatedVertex);
 
-                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x + (generalNoise * metadata.generalMotionNoiseRange.y);
+                    var generalNoiseAmount = metadata.generalMotionNoiseRange.x +
+                                             (generalNoise * metadata.generalMotionNoiseRange.y);
 
-                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x + (leafNoise * metadata.leafMotionNoiseRange.y);
+                    var leafNoiseAmount = metadata.leafMotionNoiseRange.x +
+                                          (leafNoise * metadata.leafMotionNoiseRange.y);
 
-                    var generalTime = timeY + ((componentData.windMaskXZInfluence * timeXZ) / (1 + componentData.windMaskXZInfluence));
+                    var generalTime = timeY +
+                                      ((componentData.windMaskXZInfluence * timeXZ) /
+                                       (1 + componentData.windMaskXZInfluence));
 
                     var colorAugment = new Color(
                         componentData.disableGeneralMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeR.x, metadata.grassFadeR.y, generalNoiseAmount * generalTime),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeR.x,
+                                metadata.grassFadeR.y,
+                                generalNoiseAmount * generalTime
+                            ),
                         0f,
                         componentData.disableLeafMotion
                             ? 0f
-                            : LerpHelper.SmoothStep(metadata.grassFadeB.x, metadata.grassFadeB.y, leafNoiseAmount * timeXZ),
+                            : LerpHelper.SmoothStep(
+                                metadata.grassFadeB.x,
+                                metadata.grassFadeB.y,
+                                leafNoiseAmount * timeXZ
+                            ),
                         componentData.disableVariationMotion
                             ? 0f
                             : componentData.invertVariationMotion
-                                ? 1 - LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
-                                : LerpHelper.SmoothStep(metadata.grassFadeA.x, metadata.grassFadeA.y, variationNoiseAmount)
+                                ? 1 -
+                                  LerpHelper.SmoothStep(
+                                      metadata.grassFadeA.x,
+                                      metadata.grassFadeA.y,
+                                      variationNoiseAmount
+                                  )
+                                : LerpHelper.SmoothStep(
+                                    metadata.grassFadeA.x,
+                                    metadata.grassFadeA.y,
+                                    variationNoiseAmount
+                                )
                     );
 
                     var finalColor = maskColor * colorAugment;
 
                     finalColor.r = Mathf.Clamp01(finalColor.r * componentData.windStrengthModifier);
-                    finalColor.g = Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
+                    finalColor.g =
+                        Mathf.Clamp01(finalColor.g * componentData.branchStrengthModifier);
                     finalColor.b = Mathf.Clamp01(finalColor.b * componentData.leafStrengthModifier);
 
                     colors[indices[j]] = finalColor;
@@ -897,9 +1119,9 @@ namespace Appalachia.Shading.Dynamic.Wind
 
         public class MeshBounds
         {
-            public MinMax x = new MinMax();
-            public MinMax y = new MinMax();
-            public MinMax z = new MinMax();
+            public MinMax x = new();
+            public MinMax y = new();
+            public MinMax z = new();
 
             public MeshBounds(Mesh mesh, Vector3 offset, Quaternion meshRotation, Vector3 scale)
             {
@@ -916,7 +1138,11 @@ namespace Appalachia.Shading.Dynamic.Wind
                 for (var i = 0; i < vertices.Count; i++)
                 {
                     var vertex = vertices[i];
-                    var updatedVertex = new Vector3(vertex.x * scale.x, vertex.y * scale.y, vertex.z * scale.z);
+                    var updatedVertex = new Vector3(
+                        vertex.x * scale.x,
+                        vertex.y * scale.y,
+                        vertex.z * scale.z
+                    );
                     updatedVertex = meshRotation * updatedVertex;
                     updatedVertex += offset;
 
@@ -951,8 +1177,8 @@ namespace Appalachia.Shading.Dynamic.Wind
 
             public class MinMax
             {
-                public float min;
                 public float max;
+                public float min;
             }
         }
 #endif

@@ -43,7 +43,7 @@ namespace Appalachia.Shading.Dynamic
         }
 
         [ListDrawerSettings(IsReadOnly = false)]
-        public List<SubmeshShadingMetadata> submeshMetadata = new List<SubmeshShadingMetadata>();
+        public List<SubmeshShadingMetadata> submeshMetadata = new();
 
         public Vector4[][] Calculate(Mesh mesh, Vector3 meshCenterOffset)
         {
@@ -67,7 +67,7 @@ namespace Appalachia.Shading.Dynamic
             public Material material;
 
             [EnableIf(nameof(enabled))]
-            public List<SubmeshShadingChannelMetadata> channels = new List<SubmeshShadingChannelMetadata>();
+            public List<SubmeshShadingChannelMetadata> channels = new();
 
             public Vector4[] Calculate(Mesh mesh, Vector3 meshCenterOffset)
             {
@@ -137,7 +137,11 @@ namespace Appalachia.Shading.Dynamic
                     case MeshChannelValueType.MeshLocalCenter:
 
                         var size = mesh.bounds.size;
-                        return new Vector3(size.x * meshCenterOffset.x, size.y * meshCenterOffset.y, size.z * meshCenterOffset.z);
+                        return new Vector3(
+                            size.x * meshCenterOffset.x,
+                            size.y * meshCenterOffset.y,
+                            size.z * meshCenterOffset.z
+                        );
 
                     case MeshChannelValueType.MeshBounds:
                         return mesh.bounds.size;
@@ -189,14 +193,18 @@ namespace Appalachia.Shading.Dynamic
             [ReadOnly]
             [ShowIf(nameof(ShowShaderTextureSet))]
             [ShowInInspector]
-            private string ShaderTextureSetName => shaderTextureSet == null ? string.Empty : shaderTextureSet.NameByIndex(shaderTextureSetId);
+            private string ShaderTextureSetName =>
+                shaderTextureSet == null
+                    ? string.Empty
+                    : shaderTextureSet.NameByIndex(shaderTextureSetId);
 
             private bool ShowConfigArray =>
                 (fieldValueType == MeshFieldValueType.MaterialTextureArrayOverride) ||
                 (fieldValueType == MeshFieldValueType.TextureArrayIndex) ||
                 (fieldValueType == MeshFieldValueType.ShaderSet);
 
-            private bool ShowTextureArrayIndex => fieldValueType == MeshFieldValueType.TextureArrayIndex;
+            private bool ShowTextureArrayIndex =>
+                fieldValueType == MeshFieldValueType.TextureArrayIndex;
 
             private bool ShowShaderTextureSet => fieldValueType == MeshFieldValueType.ShaderSet;
 

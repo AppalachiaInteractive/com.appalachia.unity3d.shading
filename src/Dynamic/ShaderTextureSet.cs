@@ -48,7 +48,7 @@ namespace Appalachia.Shading.Dynamic
 
         [BoxGroup("Sets")]
         [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "subsetName")]
-        public List<TextureSet> textureSets = new List<TextureSet>();
+        public List<TextureSet> textureSets = new();
 
         public string globalFloatArray = "_GLOBAL_SHADER_SET_INDICES";
 
@@ -118,8 +118,13 @@ namespace Appalachia.Shading.Dynamic
             public string subsetName;
 
             [FoldoutGroup("Elements")]
-            [ListDrawerSettings(Expanded = true, NumberOfItemsPerPage = 5, AddCopiesLastElement = true, DraggableItems = false)]
-            public List<ArrayElement> elements = new List<ArrayElement>();
+            [ListDrawerSettings(
+                Expanded = true,
+                NumberOfItemsPerPage = 5,
+                AddCopiesLastElement = true,
+                DraggableItems = false
+            )]
+            public List<ArrayElement> elements = new();
 
             [FoldoutGroup("Operations")]
             [PropertyOrder(100)]
@@ -182,7 +187,9 @@ namespace Appalachia.Shading.Dynamic
                     return 0;
                 }
 
-                return obj is ArrayElement other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(ArrayElement)}");
+                return obj is ArrayElement other
+                    ? CompareTo(other)
+                    : throw new ArgumentException($"Object must be of type {nameof(ArrayElement)}");
             }
 
             public int CompareTo(ArrayElement other)
@@ -218,7 +225,8 @@ namespace Appalachia.Shading.Dynamic
                     return true;
                 }
 
-                return (colorArrayIndex == other.colorArrayIndex) && (normalArrayIndex == other.normalArrayIndex);
+                return (colorArrayIndex == other.colorArrayIndex) &&
+                       (normalArrayIndex == other.normalArrayIndex);
             }
 
             public static bool operator <(ArrayElement left, ArrayElement right)

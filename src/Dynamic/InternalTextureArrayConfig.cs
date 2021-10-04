@@ -67,7 +67,7 @@ namespace Appalachia.Shading.Dynamic
             k32 = 32
         }
 
-        private static List<InternalTextureArrayConfig> sAllConfigs = new List<InternalTextureArrayConfig>();
+        private static List<InternalTextureArrayConfig> sAllConfigs = new();
         [HideInInspector] public bool uiOpenTextures = true;
         [HideInInspector] public bool uiOpenOutput = true;
         [HideInInspector] public bool uiOpenImporter = true;
@@ -95,18 +95,19 @@ namespace Appalachia.Shading.Dynamic
         [HideInInspector] public Texture2DArray normalSAOArray;
 
         // default settings, and overrides
-        public InternalTextureArraySettingsGroup defaultTextureSettings = new InternalTextureArraySettingsGroup();
-        public List<PlatformTextureOverride> platformOverrides = new List<PlatformTextureOverride>();
+        public InternalTextureArraySettingsGroup defaultTextureSettings = new();
+        public List<PlatformTextureOverride> platformOverrides = new();
 
         public SourceTextureSize sourceTextureSize = SourceTextureSize.Unchanged;
 
         [HideInInspector] public AllTextureChannel allTextureChannelHeight = AllTextureChannel.G;
 
-        [HideInInspector] public AllTextureChannel allTextureChannelSmoothness = AllTextureChannel.G;
+        [HideInInspector]
+        public AllTextureChannel allTextureChannelSmoothness = AllTextureChannel.G;
 
         [HideInInspector] public AllTextureChannel allTextureChannelAO = AllTextureChannel.G;
 
-        [HideInInspector] public List<InternalTextureEntry> sourceTextures = new List<InternalTextureEntry>();
+        [HideInInspector] public List<InternalTextureEntry> sourceTextures = new();
 
         private void Awake()
         {
@@ -123,7 +124,9 @@ namespace Appalachia.Shading.Dynamic
             where T : Object
         {
             var assets = new List<T>();
-            var guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(T).ToString().Replace("UnityEngine.", "")));
+            var guids = AssetDatabase.FindAssets(
+                string.Format("t:{0}", typeof(T).ToString().Replace("UnityEngine.", ""))
+            );
             for (var i = 0; i < guids.Length; i++)
             {
                 var assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
@@ -167,7 +170,11 @@ namespace Appalachia.Shading.Dynamic
 
             [Range(0, 16)] public int Aniso;
 
-            public InternalTextureArraySettings(TextureSize s, Compression c, FilterMode f, int a = 1)
+            public InternalTextureArraySettings(
+                TextureSize s,
+                Compression c,
+                FilterMode f,
+                int a = 1)
             {
                 textureSize = s;
                 compression = c;
@@ -179,17 +186,11 @@ namespace Appalachia.Shading.Dynamic
         [Serializable]
         public class InternalTextureArraySettingsGroup
         {
-            public InternalTextureArraySettings diffuseSettings = new InternalTextureArraySettings(
-                TextureSize.k1024,
-                Compression.AutomaticCompressed,
-                FilterMode.Bilinear
-            );
+            public InternalTextureArraySettings diffuseSettings =
+                new(TextureSize.k1024, Compression.AutomaticCompressed, FilterMode.Bilinear);
 
-            public InternalTextureArraySettings normalSettings = new InternalTextureArraySettings(
-                TextureSize.k1024,
-                Compression.AutomaticCompressed,
-                FilterMode.Bilinear
-            );
+            public InternalTextureArraySettings normalSettings =
+                new(TextureSize.k1024, Compression.AutomaticCompressed, FilterMode.Bilinear);
         }
 
         [Serializable]
@@ -198,7 +199,7 @@ namespace Appalachia.Shading.Dynamic
 #if UNITY_EDITOR
             public BuildTarget platform = BuildTarget.StandaloneWindows;
 #endif
-            public InternalTextureArraySettingsGroup settings = new InternalTextureArraySettingsGroup();
+            public InternalTextureArraySettingsGroup settings = new();
         }
 
         [Serializable]
@@ -229,7 +230,11 @@ namespace Appalachia.Shading.Dynamic
 
             public bool HasTextures()
             {
-                return (diffuse != null) || (height != null) || (normal != null) || (smoothness != null) || (ao != null);
+                return (diffuse != null) ||
+                       (height != null) ||
+                       (normal != null) ||
+                       (smoothness != null) ||
+                       (ao != null);
             }
         }
     }

@@ -41,13 +41,13 @@ namespace Appalachia.Shading.Dynamic.Wind
         public MeshWindStyle style;
 
         [ShowIf(nameof(showMaterial))]
-        public MeshWindMetadata.MeshWindModel windModel = new MeshWindMetadata.MeshWindModel();
+        public MeshWindMetadata.MeshWindModel windModel = new();
 
         [ShowIf(nameof(showWindMask))]
         public Texture2D windMask;
 
         [ShowIf(nameof(showTreeMaterials))]
-        public List<TreeMaterialSet> treeMaterials = new List<TreeMaterialSet>();
+        public List<TreeMaterialSet> treeMaterials = new();
 
         [ShowIf(nameof(showWindMask))]
         [Range(0f, 1f)]
@@ -59,7 +59,7 @@ namespace Appalachia.Shading.Dynamic.Wind
 
         [Range(0.1f, 2f)] public float leafStrengthModifier = 1f;
 
-        [HideInInspector] public List<WindMeshSet> recoveryInfo = new List<WindMeshSet>();
+        [HideInInspector] public List<WindMeshSet> recoveryInfo = new();
 
         private bool showGrassFade => style == MeshWindStyle.FadeUp;
 
@@ -73,7 +73,7 @@ namespace Appalachia.Shading.Dynamic.Wind
         public class WindMeshSet
         {
             public Mesh original;
-            public List<Material> originalMaterials = new List<Material>();
+            public List<Material> originalMaterials = new();
             public Mesh updated;
         }
 

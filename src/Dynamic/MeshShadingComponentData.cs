@@ -10,7 +10,8 @@ namespace Appalachia.Shading.Dynamic
 {
     public class MeshShadingComponentData : EmbeddedScriptableObject<MeshShadingComponentData>
     {
-        [HideLabel, InlineEditor(Expanded = true)]
+        [HideLabel]
+        [InlineEditor(Expanded = true)]
         public MeshShadingMetadata metadata;
 
         public Vector3 boundsCenterOffsetPercentage;
